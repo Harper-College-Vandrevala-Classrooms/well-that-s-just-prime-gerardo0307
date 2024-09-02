@@ -1,0 +1,30 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Well That's Just Prime Tests
+      id: well-that-s-just-prime-tests
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Well That's Just Prime Tests
+        setup-command: ''
+        command: gradle test
+        timeout: 5
+        max-score: 1
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        WELL-THAT-S-JUST-PRIME-TESTS_RESULTS: "${{steps.well-that-s-just-prime-tests.outputs.result}}"
+      with:
+        runners: well-that-s-just-prime-tests
